@@ -250,10 +250,13 @@ function getIndexOf(str, letter) {
  *  12345, 6    => false
  */
 function isContainNumber(num, digit) {
-  const str = `${num}`;
-  const dig = `${digit}`;
-  for (let i = 0; i < str.length; i += 1) {
-    if (str[i] === dig) return true;
+  let searchNum = num;
+  while (searchNum > 0) {
+    const currentDigit = searchNum % 10;
+    if (currentDigit === digit) {
+      return true;
+    }
+    searchNum = (searchNum - currentDigit) / 10;
   }
   return false;
 }
@@ -272,19 +275,19 @@ function isContainNumber(num, digit) {
  *  [1, 2, 3, 4, 5] => -1   => no balance element
  */
 function getBalanceIndex(arr) {
-  const left = (size) => {
+  const leftSum = (pivot) => {
     let sum = 0;
-    for (let i = 0; i < size; i += 1) sum += arr[i];
+    for (let i = 0; i < pivot; i += 1) sum += arr[i];
     return sum;
   };
-  const right = (size) => {
+  const rightSum = (pivot) => {
     let sum = 0;
-    for (let i = size + 1; i < arr.length; i += 1) sum += arr[i];
+    for (let i = pivot + 1; i < arr.length; i += 1) sum += arr[i];
     return sum;
   };
 
   for (let i = 1; i < arr.length - 1; i += 1) {
-    if (left(i) === right(i)) return i;
+    if (leftSum(i) === rightSum(i)) return i;
   }
 
   return -1;
@@ -311,35 +314,40 @@ function getBalanceIndex(arr) {
  *          [10, 9,  8,  7]
  *        ]
  */
+function createMatrix(n) {
+  return Array.from({ length: n }, () => Array.from({ length: n }, () => 0));
+}
+
 function getSpiralMatrix(size) {
-  const row = size;
-  const col = size;
-  const matrix = Array.from({ length: size }, () =>
-    Array.from({ length: size }, () => 0)
-  );
-  const dr = [0, 1, 0, -1];
-  const dc = [1, 0, -1, 0];
+  const rowSize = size;
+  const colSize = size;
+  const matrix = createMatrix(size);
+  const rowMove = [1, 0, -1, 0];
+  const colMove = [0, 1, 0, -1];
   let r = 0;
   let c = 0;
   let di = 0;
-  for (let i = 1; i <= size * size; i += 1) {
-    matrix[r][c] = i;
-    const curRow = r + dr[di];
-    const curCol = c + dc[di];
+
+  for (let i = 1; i <= rowSize * colSize; i += 1) {
+    matrix[c][r] = i;
+    const curRow = r + rowMove[di];
+    const curCol = c + colMove[di];
     if (
       curRow >= 0 &&
-      curRow < row &&
+      curRow < rowSize &&
       curCol >= 0 &&
-      curCol < col &&
-      !matrix[curRow][curCol]
+      curCol < colSize &&
+      !matrix[curCol][curRow]
     ) {
-      [r, c] = [curRow, curCol];
+      r = curRow;
+      c = curCol;
     } else {
       di = (di + 1) % 4;
-      r += dr[di];
-      c += dc[di];
+      r += rowMove[di];
+      c += colMove[di];
     }
   }
+
   return matrix;
 }
 
@@ -358,8 +366,30 @@ function getSpiralMatrix(size) {
  *    [7, 8, 9]         [9, 6, 3]
  *  ]                 ]
  */
-function rotateMatrix() {
-  throw new Error('Not implemented');
+function rotateMatrix(matrix) {
+  const len = matrix.length;
+  const rotatedMatrix = matrix;
+  const emptyArray = createMatrix(len);
+  for (let c = 0; c < len; c += 1) {
+    for (let r = 0; r < len; r += 1) {
+      emptyArray[r][c] = rotatedMatrix[c][r];
+    }
+  }
+  for (let c = 0; c < len; c += 1) {
+    for (let r = 0; r < len / 2; r += 1) {
+      const temp = emptyArray[c][r];
+      emptyArray[c][r] = emptyArray[c][len - r - 1];
+      emptyArray[c][len - r - 1] = temp;
+    }
+  }
+
+  for (let i = 0; i < emptyArray.length; i += 1) {
+    for (let j = 0; j < emptyArray.length; j += 1) {
+      rotatedMatrix[i][j] = emptyArray[i][j];
+    }
+  }
+
+  return matrix;
 }
 
 /**
@@ -418,7 +448,7 @@ function sortByAsc(arr) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
+function shuffleChar(/* */) {
   throw new Error('Not implemented');
 }
 
