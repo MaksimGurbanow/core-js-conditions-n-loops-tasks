@@ -448,8 +448,19 @@ function sortByAsc(arr) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, num) {
+  let res = str;
+  for (let i = 1; i <= num; i += 1) {
+    let evenChars = '';
+    let oddChars = '';
+    for (let j = 1; j < str.length; j += 2) {
+      evenChars += res[j - 1];
+      oddChars += res[j];
+    }
+    res = evenChars + oddChars;
+    if (res === str) return shuffleChar(str, num % i);
+  }
+  return res;
 }
 
 /**
@@ -469,8 +480,38 @@ function shuffleChar(/* */) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  const arr = [];
+  let temp = number;
+
+  while (temp) {
+    const curDig = temp % 10;
+    arr.unshift(curDig);
+    temp = (temp - curDig) / 10;
+  }
+
+  let index;
+  let current;
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    if (arr[i] > arr[i - 1]) {
+      index = i - 1;
+      current = arr[index];
+      break;
+    }
+  }
+  const left = arr.splice(0, index);
+  const right = arr.sort((a, b) => a - b);
+  let next;
+  let indexNext;
+  for (let i = 0; i < right.length; i += 1) {
+    if (right[i] === current) {
+      next = right[i + 1];
+      indexNext = i + 1;
+    }
+  }
+  const rightArr = [...right.splice(0, indexNext), ...right.splice(1)];
+  const resNumber = +[...left, next, ...rightArr].join('');
+  return resNumber;
 }
 
 module.exports = {
